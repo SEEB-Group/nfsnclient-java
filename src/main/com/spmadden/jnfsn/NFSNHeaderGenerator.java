@@ -24,6 +24,8 @@ package com.spmadden.jnfsn;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -35,6 +37,8 @@ import javax.xml.bind.DatatypeConverter;
  */
 public class NFSNHeaderGenerator {
 
+	private static final Logger LOG = Logger.getLogger("HeaderGen");
+	
 	/**
 	 * The API Key for this application
 	 */
@@ -78,7 +82,7 @@ public class NFSNHeaderGenerator {
 		salt = salt.replace("/", "");
 		salt = salt.substring(0, 16);
 
-		final StringBuffer hashBuf = new StringBuffer();
+		final StringBuffer hashBuf = new StringBuffer(128);
 		hashBuf.append(login).append(';');
 		hashBuf.append(timestamp).append(';');
 		hashBuf.append(salt).append(';');
@@ -86,7 +90,7 @@ public class NFSNHeaderGenerator {
 		hashBuf.append(requestURI).append(';');
 		hashBuf.append(getSHA1Hash(body));
 
-		final StringBuffer authBuf = new StringBuffer();
+		final StringBuffer authBuf = new StringBuffer(128);
 		authBuf.append(login).append(';');
 		authBuf.append(timestamp).append(';');
 		authBuf.append(salt).append(';');
@@ -115,7 +119,7 @@ public class NFSNHeaderGenerator {
 	public String generateHeader(
 			final String requestURI, 
 			final String body){
-		final StringBuffer buf = new StringBuffer();
+		final StringBuffer buf = new StringBuffer(128);
 		buf.append("X-NFSN-Authentication: ");
 		buf.append(generateHeaderBody(requestURI, body));
 		
@@ -134,17 +138,17 @@ public class NFSNHeaderGenerator {
 	/**
 	 * Generates the SHA-1 hash of in.
 	 * 
-	 * @param in
+	 * @param shaStr
 	 * @return Hex representation of the SHA-1 in a string.
 	 */
-	protected String getSHA1Hash(final String in) {
+	protected String getSHA1Hash(final String shaStr) {
 		try {
 			final MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
-			final byte[] shaBytes = sha1.digest(in.getBytes());
+			final byte[] shaBytes = sha1.digest(shaStr.getBytes());
 
 			return DatatypeConverter.printHexBinary(shaBytes).toLowerCase();
 		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
+			LOG.log(Level.SEVERE, "Unable to find digest instance", e);
 			return null;
 		}
 	}
