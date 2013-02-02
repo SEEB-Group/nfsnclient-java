@@ -14,8 +14,14 @@
 		<layout class="org.apache.log4j.PatternLayout" />
 	</appender>
 	
-	<logger name="com.spmadden">
+	<logger name="com.spmadden.jnfsn.net">
 		<level value="error" />
+		<appender-ref ref="console-out" />
+		<appender-ref ref="rolling-out" />
+	</logger>
+	
+	<logger name="com.spmadden.jnfsn">
+		<level value="debug" />
 		<appender-ref ref="console-out" />
 		<appender-ref ref="rolling-out" />
 	</logger>
