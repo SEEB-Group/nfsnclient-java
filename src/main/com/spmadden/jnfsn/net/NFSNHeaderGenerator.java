@@ -19,7 +19,7 @@
  * If you would like to license this code under the GNU LGPL, please
  * see http://www.seanmadden.net/licensing for details.
  */
-package com.spmadden.jnfsn;
+package com.spmadden.jnfsn.net;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

@@ -1,5 +1,5 @@
 /*
- * HeaderGenTest.java
+ * APIException.java
  * 
  * Copyright (C) 2013 Sean P Madden
  * 
@@ -19,37 +19,39 @@
  * If you would like to license this code under the GNU LGPL, please
  * see http://www.seanmadden.net/licensing for details.
  */
-package com.spmadden.jnfsn.test;
-
-import org.junit.After;
-import org.junit.Test;
-
-import com.spmadden.jnfsn.net.NFSNHeaderGenerator;
+package com.spmadden.jnfsn;
 
 /**
  * @author sean
  *
  */
-public class HeaderGenTest {
+public class APIException extends RuntimeException {
 
 	/**
-	 * @throws java.lang.Exception
+	 * 
 	 */
-	@After
-	public void tearDown() throws Exception {
+	private static final long serialVersionUID = -627147979918611521L;
+
+	/**
+	 * @param arg0
+	 * @param arg1
+	 */
+	public APIException(String arg0, Throwable arg1) {
+		super(arg0, arg1);
 	}
 
-	@Test
-	public void firstTest() {
-		NFSNHeaderGenerator gen = 
-				new NFSNHeaderGenerator("testuser", "p3kxmRKf9dk3l6ls");
-	
-		String result = gen.generateHeader("/site/example/getInfo");
-		String exp = "X-NFSN-Authentication: testuser;1012121212;dkwo28Sile4jdXkw;0fa8932e122d56e2f6d1550f9aab39c4aef8bfc4";
-		
-		System.out.println(result);
-		System.out.println(exp);
-		
+	/**
+	 * @param arg0
+	 */
+	public APIException(String arg0) {
+		super(arg0);
+	}
+
+	/**
+	 * @param arg0
+	 */
+	public APIException(Throwable arg0) {
+		super(arg0);
 	}
 
 }

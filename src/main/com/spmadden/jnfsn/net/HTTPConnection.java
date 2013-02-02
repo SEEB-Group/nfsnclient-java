@@ -39,7 +39,6 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.spmadden.jnfsn.NFSNHeaderGenerator;
 
 import javax.net.SocketFactory;
 

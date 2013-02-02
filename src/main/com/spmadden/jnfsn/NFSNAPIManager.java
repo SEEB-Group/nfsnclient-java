@@ -1,5 +1,5 @@
 /*
- * HeaderGenTest.java
+ * NFSNAbstractAPI.java
  * 
  * Copyright (C) 2013 Sean P Madden
  * 
@@ -19,10 +19,7 @@
  * If you would like to license this code under the GNU LGPL, please
  * see http://www.seanmadden.net/licensing for details.
  */
-package com.spmadden.jnfsn.test;
-
-import org.junit.After;
-import org.junit.Test;
+package com.spmadden.jnfsn;
 
 import com.spmadden.jnfsn.net.NFSNHeaderGenerator;
 
@@ -30,26 +27,42 @@ import com.spmadden.jnfsn.net.NFSNHeaderGenerator;
  * @author sean
  *
  */
-public class HeaderGenTest {
+public class NFSNAPIManager {
 
 	/**
-	 * @throws java.lang.Exception
+	 * The login username 
 	 */
-	@After
-	public void tearDown() throws Exception {
-	}
-
-	@Test
-	public void firstTest() {
-		NFSNHeaderGenerator gen = 
-				new NFSNHeaderGenerator("testuser", "p3kxmRKf9dk3l6ls");
+	private final String login;
 	
-		String result = gen.generateHeader("/site/example/getInfo");
-		String exp = "X-NFSN-Authentication: testuser;1012121212;dkwo28Sile4jdXkw;0fa8932e122d56e2f6d1550f9aab39c4aef8bfc4";
-		
-		System.out.println(result);
-		System.out.println(exp);
-		
-	}
+	/**
+	 * The API key. 
+	 */
+	private final String apiKey;
+	
+	/**
+	 * The header generator - needs to be persistent as it maintains
+	 * a time offset from the NFSN servers to be able to accurately
+	 * generate the requests.
+	 */
+	private final NFSNHeaderGenerator generator;
 
+	/**
+	 * Creates a new NFSNApiManager object
+	 * @param login username for NFSN
+	 * @param apiKey apiKey requested from NFSN
+	 */
+	public NFSNAPIManager(final String login, final String apiKey){
+		this.login = login;
+		this.apiKey = apiKey;
+		generator = new NFSNHeaderGenerator(login, apiKey);
+	}
+	
+	/**
+	 * Creates and returns a DNS object.
+	 * @param domain
+	 * @return
+	 */
+	public NFSNDns getDNS(final String domain){
+		return new NFSNDns(domain, generator);
+	}
 }

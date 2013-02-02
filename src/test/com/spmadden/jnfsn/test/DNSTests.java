@@ -1,5 +1,5 @@
 /*
- * HeaderGenTest.java
+ * DNSTests.java
  * 
  * Copyright (C) 2013 Sean P Madden
  * 
@@ -21,35 +21,32 @@
  */
 package com.spmadden.jnfsn.test;
 
-import org.junit.After;
-import org.junit.Test;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
-import com.spmadden.jnfsn.net.NFSNHeaderGenerator;
+import com.spmadden.jnfsn.NFSNAPIManager;
+import com.spmadden.jnfsn.NFSNDns;
 
 /**
  * @author sean
  *
  */
-public class HeaderGenTest {
+public class DNSTests {
 
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@After
-	public void tearDown() throws Exception {
-	}
-
-	@Test
-	public void firstTest() {
-		NFSNHeaderGenerator gen = 
-				new NFSNHeaderGenerator("testuser", "p3kxmRKf9dk3l6ls");
 	
-		String result = gen.generateHeader("/site/example/getInfo");
-		String exp = "X-NFSN-Authentication: testuser;1012121212;dkwo28Sile4jdXkw;0fa8932e122d56e2f6d1550f9aab39c4aef8bfc4";
+	public static void main(final String[] args) throws IOException{
+		final InputStream is = DNSTests.class.getResourceAsStream("/testprops.properties");
+		final Properties props = new Properties();
+		props.load(is);
 		
-		System.out.println(result);
-		System.out.println(exp);
+		final String login = props.getProperty("apiuser");
+		final String apiKey = props.getProperty("apikey");
+		final String domain = props.getProperty("domain");
 		
+		final NFSNAPIManager api = new NFSNAPIManager(login, apiKey);
+		final NFSNDns dns = api.getDNS(domain);
+		
+		System.out.println(dns);
 	}
-
 }

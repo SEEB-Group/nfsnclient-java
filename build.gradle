@@ -24,11 +24,12 @@ repositories {
 }
 
 dependencies {
-//#		emma "emma:emma:2.0.5312"
-//#		emma "emma:emma_ant:2.0.5312"
+//		emma "emma:emma:2.0.5312"
+//		emma "emma:emma_ant:2.0.5312"
 		pmd "net.sourceforge.pmd:pmd:5.0.1"
         testCompile 'junit:junit:4.+'
         compile 'log4j:log4j:1.+'
+        compile 'org.json:json:+'
 }
 
 check.dependsOn {pmdMain}

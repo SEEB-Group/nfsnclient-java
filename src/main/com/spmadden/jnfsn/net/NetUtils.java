@@ -1,5 +1,5 @@
 /*
- * HeaderGenTest.java
+ * URLUtils.java
  * 
  * Copyright (C) 2013 Sean P Madden
  * 
@@ -19,37 +19,29 @@
  * If you would like to license this code under the GNU LGPL, please
  * see http://www.seanmadden.net/licensing for details.
  */
-package com.spmadden.jnfsn.test;
+package com.spmadden.jnfsn.net;
 
-import org.junit.After;
-import org.junit.Test;
-
-import com.spmadden.jnfsn.net.NFSNHeaderGenerator;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * @author sean
  *
  */
-public class HeaderGenTest {
+public class NetUtils {
 
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@After
-	public void tearDown() throws Exception {
+	public static String getAPIUrl(final String requestUri){
+		return "https://api.nearlyfreespeech.net/" + requestUri;
 	}
-
-	@Test
-	public void firstTest() {
-		NFSNHeaderGenerator gen = 
-				new NFSNHeaderGenerator("testuser", "p3kxmRKf9dk3l6ls");
 	
-		String result = gen.generateHeader("/site/example/getInfo");
-		String exp = "X-NFSN-Authentication: testuser;1012121212;dkwo28Sile4jdXkw;0fa8932e122d56e2f6d1550f9aab39c4aef8bfc4";
+	public static String consumeAll(final InputStream is) throws IOException{
+		final StringBuffer buf = new StringBuffer();
+		int chr = -1;
+		while((chr = is.read()) != -1){
+			buf.append((char) chr);
+		}
 		
-		System.out.println(result);
-		System.out.println(exp);
+		return buf.toString();
 		
 	}
-
 }
