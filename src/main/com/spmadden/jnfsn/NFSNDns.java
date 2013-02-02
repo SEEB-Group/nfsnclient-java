@@ -23,10 +23,15 @@
 package com.spmadden.jnfsn;
 
 import java.io.IOException;
+import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONException;
 
+import com.spmadden.jnfsn.dns.DNSResourceRecord;
 import com.spmadden.jnfsn.net.HTTPConnection;
+import com.spmadden.jnfsn.net.HTTPConnection.RequestMethod;
 import com.spmadden.jnfsn.net.NFSNHeaderGenerator;
 import com.spmadden.jnfsn.net.NetUtils;
 
@@ -94,8 +99,8 @@ public class NFSNDns {
 
 	protected String getString(final String name) throws APIException {
 		try {
-			final String url = NetUtils.getAPIUrl("dns/" + domain + "/" + name);
-			HTTPConnection conn = new HTTPConnection(url, generator);
+			final String url = getURL(name);
+			final HTTPConnection conn = new HTTPConnection(url, generator);
 			final String value = NetUtils.consumeAll(conn.getDataStream());
 			LOG.debug("GetString: " + name + " = " + value);
 			return value;
@@ -105,6 +110,59 @@ public class NFSNDns {
 		return null;
 	}
 
+	public DNSResourceRecord[] getResourceRecords(
+			final String name,
+			final String type,
+			final String data) throws APIException{
+		try{
+			final String url = getURL("listRRs");
+			final HTTPConnection conn = new HTTPConnection(url, RequestMethod.POST, generator);
+			
+			if(name != null){
+				conn.addFormField("name", name);
+			}
+			if(type != null && !"".equals(type)){
+				conn.addFormField("type", type);
+			}
+			if(data != null && !"".equals(data)){
+				conn.addFormField("data", data);
+			}
+			
+			final String value = NetUtils.consumeAll(conn.getDataStream());
+			LOG.debug("JSON: " + value);
+			
+			final JSONArray arr = new JSONArray(value);
+			final LinkedList<DNSResourceRecord> rrs = new LinkedList<>();
+			for(int i = 0; i < arr.length(); ++i){
+				rrs.add(DNSResourceRecord.fromJSONObject(arr.getJSONObject(i)));
+			}
+			
+			return rrs.toArray(new DNSResourceRecord[rrs.size()]);
+		}catch(IOException e){
+			LOG.error(e);
+		} catch (JSONException e) {
+			LOG.error(e);
+		}
+		return null;
+	}
+	
+	public DNSResourceRecord[] getAllRecords() throws APIException{
+		return getResourceRecords(null, null, null);
+	}
+	
+	public DNSResourceRecord[] getRecordsByName(final String name){
+		return getResourceRecords(name, null, null);
+	}
+	
+	public DNSResourceRecord[] getRecordsByType(final String type){
+		return getResourceRecords(null, type, null);
+	}
+	
+	protected String getURL(final String method){
+		final String url = NetUtils.getAPIUrl("dns/" + domain + "/");
+		return url + method;
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 

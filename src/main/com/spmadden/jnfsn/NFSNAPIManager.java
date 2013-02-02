@@ -30,16 +30,6 @@ import com.spmadden.jnfsn.net.NFSNHeaderGenerator;
 public class NFSNAPIManager {
 
 	/**
-	 * The login username 
-	 */
-	private final String login;
-	
-	/**
-	 * The API key. 
-	 */
-	private final String apiKey;
-	
-	/**
 	 * The header generator - needs to be persistent as it maintains
 	 * a time offset from the NFSN servers to be able to accurately
 	 * generate the requests.
@@ -52,8 +42,6 @@ public class NFSNAPIManager {
 	 * @param apiKey apiKey requested from NFSN
 	 */
 	public NFSNAPIManager(final String login, final String apiKey){
-		this.login = login;
-		this.apiKey = apiKey;
 		generator = new NFSNHeaderGenerator(login, apiKey);
 	}
 	

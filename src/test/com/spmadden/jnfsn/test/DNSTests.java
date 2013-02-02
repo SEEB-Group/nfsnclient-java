@@ -23,6 +23,7 @@ package com.spmadden.jnfsn.test;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Properties;
 
 import com.spmadden.jnfsn.NFSNAPIManager;
@@ -48,5 +49,9 @@ public class DNSTests {
 		final NFSNDns dns = api.getDNS(domain);
 		
 		System.out.println(dns);
+		System.out.println(Arrays.deepToString(dns.getAllRecords()));
+		System.out.println(Arrays.deepToString(dns.getRecordsByType("A")));
+		System.out.println(Arrays.deepToString(dns.getRecordsByType("AAAA")));
+		System.out.println(Arrays.deepToString(dns.getRecordsByName("")));
 	}
 }
