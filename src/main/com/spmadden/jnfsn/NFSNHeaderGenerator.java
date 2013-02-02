@@ -24,10 +24,10 @@ package com.spmadden.jnfsn;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.xml.bind.DatatypeConverter;
+
+import org.apache.log4j.Logger;
 
 /**
  * Generates the X-NFSN-Authentication header required for all requests
@@ -37,7 +37,7 @@ import javax.xml.bind.DatatypeConverter;
  */
 public class NFSNHeaderGenerator {
 
-	private static final Logger LOG = Logger.getLogger("HeaderGen");
+	private static final Logger LOG = Logger.getLogger(NFSNHeaderGenerator.class);
 	
 	/**
 	 * The API Key for this application
@@ -48,6 +48,16 @@ public class NFSNHeaderGenerator {
 	 * Username for the NFSN servers.
 	 */
 	private final String login;
+	
+	/**
+	 * The offset for the time - gets added to the request.
+	 */
+	private int timeOffset;
+	
+	/**
+	 * The last timestamp of the request.
+	 */
+	private long lastTimestamp = 0;
 
 	/**
 	 * Constructor.
@@ -58,10 +68,25 @@ public class NFSNHeaderGenerator {
 	 *            - The API key you requested from NFSN - tied to login.
 	 */
 	public NFSNHeaderGenerator(final String login, final String apiKey) {
-		this.apiKey = apiKey;
-		this.login = login;
+		this(login, apiKey, 0);
 	}
 
+	/**
+	 * Constructor.
+	 * @param login
+	 * @param apiKey
+	 * @param timeOffset
+	 */
+	public NFSNHeaderGenerator(
+			final String login,
+			final String apiKey,
+			final int timeOffset){
+		this.apiKey = apiKey;
+		this.login = login;
+		this.timeOffset = timeOffset;
+		
+	}
+	
 	/**
 	 * Generates a NFSN header with a body.
 	 * 
@@ -72,7 +97,10 @@ public class NFSNHeaderGenerator {
 	 * @return the body of the header (no X-NFSN-Authentication block)
 	 */
 	public String generateHeaderBody(final String requestURI, final String body) {
-		final long timestamp = System.currentTimeMillis() / 1000;
+		long timestamp = System.currentTimeMillis() / 1000;
+		timestamp += timeOffset;
+		lastTimestamp = timestamp;
+		
 		final Random rand = new Random();
 		final byte[] saltBytes = new byte[512];
 		rand.nextBytes(saltBytes);
@@ -89,6 +117,8 @@ public class NFSNHeaderGenerator {
 		hashBuf.append(apiKey).append(';');
 		hashBuf.append(requestURI).append(';');
 		hashBuf.append(getSHA1Hash(body));
+		
+		LOG.debug(hashBuf.toString());
 
 		final StringBuffer authBuf = new StringBuffer(128);
 		authBuf.append(login).append(';');
@@ -148,8 +178,31 @@ public class NFSNHeaderGenerator {
 
 			return DatatypeConverter.printHexBinary(shaBytes).toLowerCase();
 		} catch (NoSuchAlgorithmException e) {
-			LOG.log(Level.SEVERE, "Unable to find digest instance", e);
+			LOG.error("Unable to find digest instance", e);
 			return null;
 		}
+	}
+	
+	/**
+	 * Sets the time offset.
+	 * @param offset
+	 */
+	public void setTimeOffset(final int offset){
+		this.timeOffset = offset;
+	}
+	
+	/**
+	 * Returns the timeoffset.
+	 */
+	public int getTimeOffset(){
+		return timeOffset;
+	}
+	
+	/**
+	 * Returns the timestamp of the last header generation. 
+	 * @return
+	 */
+	public long getLastTimestamp(){
+		return lastTimestamp;
 	}
 }
