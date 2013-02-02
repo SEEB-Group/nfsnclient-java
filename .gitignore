@@ -10,3 +10,4 @@
 .classpath
 .gradle
 .settings
+*.properties
