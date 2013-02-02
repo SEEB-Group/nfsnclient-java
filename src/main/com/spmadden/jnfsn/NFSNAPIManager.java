@@ -53,4 +53,8 @@ public class NFSNAPIManager {
 	public NFSNDns getDNS(final String domain){
 		return new NFSNDns(domain, generator);
 	}
+	
+	public NFSNAccount getAccount(final String account){
+		return new NFSNAccount(account, generator);
+	}
 }
