@@ -249,9 +249,13 @@ public class HTTPConnection extends AbstractInternetConnection {
 			}
 			LOG.debug(responseFields);
 			
+			int readLen = -1;
+			if(responseFields.containsKey("Content-Length")){
+				readLen = Integer.valueOf(responseFields.get("Content-Length"));
+			}
 			final StringBuffer outBuf = new StringBuffer();
 			int chr = 0;
-			while((chr = read.read() )!= -1){
+			while(readLen-- > 0 && (chr = read.read()) != -1){
 				outBuf.append((char)chr);
 			}
 			
@@ -263,6 +267,11 @@ public class HTTPConnection extends AbstractInternetConnection {
 				LOG.debug("NFSN Delta-T=" + deltaT);
 				generator.setTimeOffset((int)deltaT);
 				sock.close();
+				
+				if(deltaT < 5 && deltaT > -5){
+					throw new HTTPException("Some other error happened that I can't account for.");
+				}
+				
 				final HTTPConnection conn = new HTTPConnection(this);
 				return conn.getDataStream();
 			}
