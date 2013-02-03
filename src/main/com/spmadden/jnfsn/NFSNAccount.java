@@ -24,7 +24,10 @@ package com.spmadden.jnfsn;
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import com.spmadden.jnfsn.account.AccountStatus;
 import com.spmadden.jnfsn.net.HTTPConnection;
 import com.spmadden.jnfsn.net.NFSNHeaderGenerator;
 import com.spmadden.jnfsn.net.NetUtils;
@@ -67,8 +70,18 @@ public class NFSNAccount {
 		return getString("friendlyName");
 	}
 	
-	public String getStatus(){
-		return getString("status");
+	public AccountStatus getStatus(){
+		final String status = getString("status");
+		JSONObject obj;
+		try {
+			obj = new JSONObject(status);
+		} catch (JSONException e) {
+			throw new APIException(e);
+		}
+		
+		final AccountStatus stat = AccountStatus.fromJSONObject(obj);
+		
+		return stat;
 	}
 	
 	public String getSites(){
