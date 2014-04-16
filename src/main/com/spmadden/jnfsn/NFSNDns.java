@@ -110,6 +110,35 @@ public class NFSNDns {
 		return null;
 	}
 
+	public boolean addResourceRecord(String name, String type, String data, String ttl) {
+		boolean success = false;
+		try{
+			final String url = getURL("addRR");
+			final HTTPConnection conn = new HTTPConnection(url, RequestMethod.POST, generator);
+			
+			if(name != null){
+				conn.addFormField("name", name);
+			}
+			if(type != null && !"".equals(type)){
+				conn.addFormField("type", type);
+			}
+			if(data != null && !"".equals(data)){
+				conn.addFormField("data", data);
+			}
+			if(ttl != null && !"".equals(ttl)){
+				conn.addFormField("ttl", ttl);
+			}
+			
+			final String value = NetUtils.consumeAll(conn.getDataStream());
+			LOG.debug("Update complete; " + value);
+			success = true;
+			
+		}catch(IOException e){
+			LOG.error(e);
+		}
+		return success;
+	}
+
 	public DNSResourceRecord[] getResourceRecords(
 			final String name,
 			final String type,
